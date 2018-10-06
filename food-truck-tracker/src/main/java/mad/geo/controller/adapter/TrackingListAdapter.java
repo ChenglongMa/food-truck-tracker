@@ -1,5 +1,6 @@
 package mad.geo.controller.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,10 @@ import mad.geo.R;
 import mad.geo.model.AbstractTrackable;
 import mad.geo.model.AbstractTracking;
 import mad.geo.service.TrackableService;
+import mad.geo.service.TrackingService;
+import mad.geo.utils.DateHelper;
+
+import static mad.geo.utils.DateHelper.dateToString;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link AbstractTracking}
@@ -24,34 +29,34 @@ public class TrackingListAdapter extends RecyclerView.Adapter<TrackingListAdapte
     private List<AbstractTracking> mValues;
     private AbstractTracking selectedTracking;
     private TrackableService trackableService;
+    private TrackingService trackingService;
 
     public TrackingListAdapter(List<AbstractTracking> items) {
-        items.sort(new Comparator<AbstractTracking>() {
-            @Override
-            public int compare(AbstractTracking t1, AbstractTracking t2) {
-                return t1.getMeetTime().compareTo(t2.getMeetTime());
-            }
-        });
+        items.sort(Comparator.comparing(AbstractTracking::getMeetTime));
         mValues = items;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        trackableService = TrackableService.getSingletonInstance(recyclerView.getContext());
+        trackingService = TrackingService.getSingletonInstance(recyclerView.getContext());
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_tracking, parent, false);
-        trackableService = TrackableService.getSingletonInstance(view.getContext());
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
 
         AbstractTracking tracking = mValues.get(position);
         holder.mLocation.setText(tracking.getMeetLocation());
-        Date date = tracking.getMeetTime();
-        String meetTime = DateFormat.getDateTimeInstance(
-                DateFormat.SHORT, DateFormat.MEDIUM).format(date);
-        holder.mMeetTime.setText(meetTime);
+        holder.mMeetTime.setText(dateToString(tracking.getMeetTime()));
         AbstractTrackable trackable = trackableService.getTrackableById(tracking.getTrackableId());
         holder.mTrackableName.setText(trackable.getName());
         holder.mTitle.setText(tracking.getTitle());

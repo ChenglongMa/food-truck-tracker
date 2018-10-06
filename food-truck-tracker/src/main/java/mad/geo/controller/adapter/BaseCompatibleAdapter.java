@@ -11,6 +11,7 @@ import java.util.List;
  *
  * @author Michael
  */
+//TODO
 public abstract class BaseCompatibleAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     protected Context context;

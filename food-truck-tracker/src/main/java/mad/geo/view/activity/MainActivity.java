@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mad.geo.R;
-import mad.geo.view.fragment.AddEditTrackableDialog;
-import mad.geo.view.fragment.AddEditTrackingDialog;
+import mad.geo.view.dialog.AddEditTrackableDialog;
+import mad.geo.view.dialog.AddEditTrackingDialog;
 import mad.geo.view.fragment.TrackableFragment;
 import mad.geo.view.fragment.TrackingFragment;
 import mad.geo.model.AbstractTrackable;

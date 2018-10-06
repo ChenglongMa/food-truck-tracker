@@ -82,7 +82,6 @@ public class TrackableFragment extends Fragment
             registerForContextMenu(recyclerView);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             mAdapter = TrackableListAdapter.getInstance();
-//            mAdapter.refresh();
             recyclerView.setAdapter(mAdapter);
         }
         return view;

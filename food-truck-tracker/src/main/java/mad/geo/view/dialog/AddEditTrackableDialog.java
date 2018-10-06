@@ -1,4 +1,4 @@
-package mad.geo.view.fragment;
+package mad.geo.view.dialog;
 
 import android.app.DialogFragment;
 import android.content.Context;

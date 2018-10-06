@@ -18,6 +18,7 @@ import mad.geo.R;
 import mad.geo.model.AbstractTrackable;
 import mad.geo.model.AsyncTaskResult;
 import mad.geo.service.TrackableService;
+import mad.geo.utils.ExceptionAsyncTask;
 import mad.geo.view.activity.TrackableDetailActivity;
 import mad.geo.view.fragment.TrackableDetailFragment;
 
@@ -33,6 +34,7 @@ public class TrackableListAdapter
     private InsertTask insertTask;
     private RefreshTask refreshTask;
     private DeleteTask deleteTask;
+    private UpdateTask updateTask;
     private Context context;
 
     private TrackableListAdapter() {
@@ -64,6 +66,12 @@ public class TrackableListAdapter
         }
     }
 
+    private void cancelUpdateTaskIfRunning() {
+        if (updateTask != null) {
+            updateTask.cancel(true);
+        }
+    }
+
     private void cancelDeleteTaskIfRunning() {
         if (deleteTask != null) {
             deleteTask.cancel(true);
@@ -79,6 +87,11 @@ public class TrackableListAdapter
         notifyItemRemoved(index);
     }
 
+    /**
+     * Add new trackable to list view
+     *
+     * @param trackable
+     */
     public void addItem(AbstractTrackable trackable) {
         insert(trackable);
         notifyItemInserted(mValues.indexOf(trackable));
@@ -89,20 +102,10 @@ public class TrackableListAdapter
     }
 
     public void editItem(AbstractTrackable trackable) {
-        trackableService.updateTrackable(trackable);
-//        notifyChanged();
+        update(trackable);
         notifyItemChanged(mValues.indexOf(trackable));
-
     }
 
-//    /**
-//     * Update the data set and notify the UI
-//     */
-//    @Deprecated
-//    private void notifyChanged() {
-//        mValues = trackableService.getTrackables();
-//        notifyDataSetChanged();
-//    }
 
     @NonNull
     @Override
@@ -138,22 +141,24 @@ public class TrackableListAdapter
         notifyDataSetChanged();
     }
 
-    /**
-     * 删除数据
-     */
     private void delete(AbstractTrackable... trackables) {
-        cancelInsertTaskIfRunning();
+        cancelDeleteTaskIfRunning();
         deleteTask = new DeleteTask();
         deleteTask.execute(trackables);
     }
 
-    /**
-     * 插入数据
-     */
+
+    private void update(AbstractTrackable... trackables) {
+        cancelUpdateTaskIfRunning();
+        updateTask = new UpdateTask();
+        updateTask.execute(trackables);
+
+    }
+
     private void insert(AbstractTrackable... trackables) {
         cancelInsertTaskIfRunning();
-        insertTask = new InsertTask(trackables);
-        insertTask.execute();
+        insertTask = new InsertTask();
+        insertTask.execute(trackables);
     }
 
     private static class LazyHolder {
@@ -194,41 +199,41 @@ public class TrackableListAdapter
 
     }
 
-    private class InsertTask extends AsyncTask<Void, Void, AsyncTaskResult<AbstractTrackable>> {
-        private AbstractTrackable[] trackables;
+    private class UpdateTask extends ExceptionAsyncTask<AbstractTrackable> {
 
-        InsertTask(AbstractTrackable... trackables) {
-            this.trackables = trackables;
+
+        @Override
+        protected void doInBackground(AbstractTrackable trackable) {
+            trackableService.updateTrackable(trackable);
         }
 
         @Override
-        protected AsyncTaskResult<AbstractTrackable> doInBackground(Void... voids) {
-            try {
-                for (AbstractTrackable trackable : trackables) {
-                    trackableService.addTrackable(trackable);
-                }
-                return null;
-            } catch (Exception e) {
-                return new AsyncTaskResult<>(e);
-            }
+        protected void dealWithException(Exception e) {
+            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        protected void onPostExecute(AsyncTaskResult<AbstractTrackable> result) {
-            if (result != null && result.getError() != null) {
-                Toast.makeText(context, result.getError().getMessage(), Toast.LENGTH_SHORT).show();
-            } else {
-                refresh();
-            }
-            super.onPostExecute(result);
+        protected void postExecute(AsyncTaskResult<AbstractTrackable> result) {
+            refresh();
+        }
+    }
+
+    private class InsertTask extends ExceptionAsyncTask<AbstractTrackable> {
+
+        @Override
+        protected void doInBackground(AbstractTrackable trackable) {
+            trackableService.addTrackable(trackable);
         }
 
-        //
-//        @Override
-//        protected void onPostExecute(Void aVoid) {
-//            super.onPostExecute(aVoid);
-//            refresh();
-//        }
+        @Override
+        protected void dealWithException(Exception e) {
+            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void postExecute(AsyncTaskResult<AbstractTrackable> result) {
+            refresh();
+        }
     }
 
     private class RefreshTask extends AsyncTask<Void, Void, List<AbstractTrackable>> {

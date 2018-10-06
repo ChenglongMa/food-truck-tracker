@@ -1,4 +1,4 @@
-package mad.geo.view.fragment;
+package mad.geo.view.dialog;
 
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
@@ -276,7 +276,7 @@ public class AddEditTrackingDialog extends DialogFragment
                     break;
             }
         } catch (Exception e) {
-            Log.i(LOG_TAG, e.getMessage());
+            Log.e(LOG_TAG, e.getMessage());
             Toast.makeText(this.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
