@@ -98,14 +98,14 @@ public class TrackableFragment extends Fragment
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.context_add_tracking:
-                if (trackableService.getTrackingInfo(mAdapter.getSelectItem()).isEmpty()) {
+                if (trackableService.getTrackingInfo(mAdapter.getSelectedItem()).isEmpty()) {
                     Toast.makeText(getContext(), "There is no available tracking info", Toast.LENGTH_SHORT).show();
                     break;
                 }
-                ((MainActivity) getActivity()).showTrackingDialog(mAdapter.getSelectItem());
+                ((MainActivity) getActivity()).showTrackingDialog(mAdapter.getSelectedItem());
                 break;
             case R.id.context_trackable_edit:
-                ((MainActivity) getActivity()).showTrackableDialog(R.string.edit_trackable_dialog, mAdapter.getSelectItem());
+                ((MainActivity) getActivity()).showTrackableDialog(R.string.edit_trackable_dialog, mAdapter.getSelectedItem());
                 break;
             case R.id.context_trackable_remove:
                 mAdapter.removeSelectedItem();

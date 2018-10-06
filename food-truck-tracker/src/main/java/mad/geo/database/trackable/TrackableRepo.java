@@ -158,9 +158,7 @@ public class TrackableRepo {
         db.delete(TABLE_NAME, null, null);
     }
 
-    /**
-     * 将对象保证成ContentValues
-     */
+
     private static ContentValues toContentValues(AbstractTrackable trackable) {
         ContentValues values = new ContentValues();
         values.put(TrackableColumns._ID, trackable.getId());
@@ -172,9 +170,7 @@ public class TrackableRepo {
         return values;
     }
 
-    /**
-     * 将学生对象从Cursor中取出
-     */
+
     private static AbstractTrackable getTrackableFromCursor(Cursor cursor) {
         AbstractTrackable trackable = new FoodTruck();
         trackable.setId(cursor.getInt(cursor.getColumnIndex(TrackableColumns._ID)));

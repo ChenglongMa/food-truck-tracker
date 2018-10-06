@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import mad.geo.model.AsyncTaskResult;
 
 /**
+ * An AsyncTask model that can deal with exception of job doing in background
  * @author : Chenglong Ma
  */
 public abstract class ExceptionAsyncTask<T> extends AsyncTask<T, Void, AsyncTaskResult<T>> {
