@@ -1,0 +1,54 @@
+package mad.geo.database;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import java.util.Scanner;
+
+import mad.geo.R;
+import mad.geo.database.trackable.TrackableManager;
+import mad.geo.database.tracking.TrackingManager;
+import mad.geo.model.AbstractTrackable;
+import mad.geo.model.FoodTruck;
+import mad.geo.utils.DBOpenHelper;
+
+import static android.content.ContentValues.TAG;
+
+
+public class DBManager {
+
+    private static volatile DBManager dbManager;
+
+    private final TrackableManager trackableManager;
+    private final TrackingManager trackingManager;
+    private final Context context;
+
+
+    private DBManager(Context context) {
+        DBOpenHelper dbHelper = DBOpenHelper.getSingletonInstance(context);
+        trackableManager = new TrackableManager(dbHelper);
+        trackingManager = new TrackingManager(dbHelper);
+        this.context = context;
+    }
+
+    public static DBManager getInstance(Context context) {
+        synchronized (DBManager.class) {
+            if (dbManager == null) {
+                dbManager = new DBManager(context);
+            }
+        }
+        return dbManager;
+    }
+
+
+
+    public TrackableManager getTrackableManager() {
+        return this.trackableManager;
+    }
+
+    public TrackingManager getTrackingManager() {
+        return trackingManager;
+    }
+}

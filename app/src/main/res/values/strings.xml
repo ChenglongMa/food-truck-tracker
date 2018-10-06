@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">GeoTracking</string>
+    <string name="title_trackable_list">Trackables</string>
+    <string name="title_trackable_detail">Trackable Detail</string>
+    <string name="trackable_id">ID</string>
+    <string name="trackable_name">Name</string>
+    <string name="trackable_cate">Category</string>
+    <string name="trackable_web">URL</string>
+    <string name="trackable_des">Description</string>
+    <string name="trackable_route">Route Info</string>
+
+</resources>

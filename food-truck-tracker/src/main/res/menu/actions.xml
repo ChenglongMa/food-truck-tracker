@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="@string/action_bar_search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@drawable/baseline_filter_list_24"
+        android:title="@string/action_bar_filter"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_filter_category"
+                android:icon="@drawable/baseline_category_black_24"
+                android:onClick="onFilter"
+                android:title="@string/action_bar_filter_category" />
+            <item
+                android:id="@+id/action_filter_name"
+                android:icon="@drawable/baseline_sort_by_alpha_black_24"
+                android:onClick="onFilter"
+                android:title="@string/action_bar_filter_name" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/round_add_circle_white_24"
+        android:title="@string/action_bar_add" />
+    <!--<item-->
+        <!--android:id="@+id/action_edit"-->
+        <!--android:icon="@android:drawable/ic_menu_edit"-->
+        <!--android:title="@string/action_bar_edit"-->
+        <!--app:showAsAction="always" />-->
+
+</menu>

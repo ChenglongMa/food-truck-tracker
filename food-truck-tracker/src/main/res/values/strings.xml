@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">GeoTracking</string>
+    <string name="title_trackable_list">Trackables</string>
+    <string name="title_trackable_detail">Trackable Detail</string>
+
+    <string name="trackable_id">ID</string>
+    <string name="trackable_name">Trackable Name</string>
+    <string name="trackable_cate">Category</string>
+    <string name="trackable_web">URL</string>
+    <string name="trackable_des">Description</string>
+    <string name="trackable_route">Route Info</string>
+
+    <string name="tracking_id">ID</string>
+    <string name="tracking_title">Title</string>
+    <string name="tracking_loc">Meet Location</string>
+    <string name="tracking_start_time">Start Time</string>
+    <string name="tracking_end_time">End Time</string>
+    <string name="tracking_meet_time">Meet Time</string>
+
+    <string name="title_activity_main">Food Truck Tracker</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_home">Home</string>
+    <string name="title_tracking_list">Trackings</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string name="action_bar_search">Search</string>
+    <string name="action_bar_add">Add</string>
+    <string name="action_bar_edit">Edit</string>
+    <string name="action_bar_share">Share</string>
+    <string name="action_bar_filter">Filter By</string>
+    <string name="action_bar_filter_name">By Name</string>
+    <string name="action_bar_filter_category">By Category</string>
+
+    <string name="context_item_add_tracking">Add Tracking</string>
+    <string name="context_item_edit">Edit</string>
+    <string name="context_item_remove">Remove</string>
+
+    <string name="add_trackable_dialog">Add New Trackable</string>
+    <string name="edit_trackable_dialog">Edit Trackable</string>
+    <string name="add_tracking_dialog">Add New Tracking</string>
+    <string name="edit_tracking_dialog">Edit Tracking</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_ok">OK</string>
+
+    <string name="default_time">05/07/2018 1:00:00 PM</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="prompt_location">Please choose location</string>
+    <string name="prompt_start_time">Please choose start time</string>
+    <string name="prompt_end_time">Please choose end time</string>
+    <string name="tracking_card_meet_time">Meet Time:</string>
+</resources>
