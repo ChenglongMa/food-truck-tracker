@@ -1,5 +1,9 @@
 package mad.geo.view.activity;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,27 +22,31 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import mad.geo.R;
+import mad.geo.model.AbstractTrackable;
+import mad.geo.model.AbstractTracking;
+import mad.geo.service.service.SuggestionJob;
 import mad.geo.view.dialog.AddEditTrackableDialog;
 import mad.geo.view.dialog.AddEditTrackingDialog;
 import mad.geo.view.fragment.TrackableFragment;
 import mad.geo.view.fragment.TrackingFragment;
-import mad.geo.model.AbstractTrackable;
-import mad.geo.model.AbstractTracking;
 
 public class MainActivity extends AppCompatActivity
         implements AddEditTrackingDialog.OnFragmentInteractionListener,
         AddEditTrackableDialog.OnFragmentInteractionListener {
 
     private static final String LOG_TAG = MainActivity.class.getName();
+    private static final int JOB_ID = 1;
+    private static final int DELAY_MS = 1000; // 1 secs delay
     int mFilterMode = -1;
     private ViewPager viewPager;
     private Menu menu;
     private MenuItem menuItem;
     private TrackableFragment trackableFragment;
     private TrackingFragment trackingFragment;
-
+    private JobScheduler jobScheduler;
     /**
      * Navigate to specified page.
      */
@@ -102,6 +111,33 @@ public class MainActivity extends AppCompatActivity
             }
         });
         setupViewPager(viewPager);
+        scheduleJob();
+    }
+
+    @Override
+    protected void onStop() {
+        jobScheduler.cancel(JOB_ID);
+        super.onStop();
+    }
+
+    private void scheduleJob() {
+        // create a builder to make a JobInfo for the JobService so we can schedule it
+        // according to certain contraints (note use of ComponentName!)
+        JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(this, SuggestionJob.class));
+
+        // delay start (only if it is not a periodic job!)
+        builder.setMinimumLatency(DELAY_MS);
+        // minimum periodic is currently 15 minutes so only if you are patient enough to test!
+        Log.d(LOG_TAG, String.format("Minimum periodic period (getMinPeriodMillis()): %d mins"
+                , TimeUnit.MILLISECONDS.toMinutes(JobInfo.getMinPeriodMillis())));
+        // comment out setMinimumLatency() call above to do periodic scheduling
+        //builder.setPeriodic(TimeUnit.MINUTES.toMillis(15));
+        // requires network .. see API for other options
+        //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        // Schedule job
+        Log.d(LOG_TAG, "Scheduling job");
+        jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(builder.build());
     }
 
     @Override

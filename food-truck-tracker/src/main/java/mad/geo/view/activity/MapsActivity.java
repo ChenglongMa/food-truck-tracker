@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import mad.geo.R;
-import mad.geo.controller.task.RouteTask;
+import mad.geo.service.task.RouteTask;
 import mad.geo.utils.DirectionsParser;
 
 public class MapsActivity extends FragmentActivity implements
