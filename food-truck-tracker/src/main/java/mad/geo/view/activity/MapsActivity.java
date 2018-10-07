@@ -2,6 +2,7 @@ package mad.geo.view.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -34,15 +35,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import mad.geo.R;
+import mad.geo.controller.task.RouteTask;
 import mad.geo.utils.DirectionsParser;
 
 public class MapsActivity extends FragmentActivity implements
-        OnMapReadyCallback,GoogleMap.OnMarkerClickListener,GoogleMap.OnMarkerDragListener
-{
+        OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
+    public static final String TRACKABLE_ID = "item_id";
     private static final int LOCATION_REQUEST = 500;
     ArrayList<LatLng> listPoints;
     private GoogleMap mMap;
+    private int trackableId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,10 @@ public class MapsActivity extends FragmentActivity implements
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        Intent intent = getIntent();
+        if (intent != null) {
+            trackableId = intent.getIntExtra(TRACKABLE_ID, -1);
+        }
         mapFragment.getMapAsync(this);
         listPoints = new ArrayList<>();
     }
@@ -91,6 +98,10 @@ public class MapsActivity extends FragmentActivity implements
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
+        }
+        if (trackableId != -1) {
+            RouteTask routeTask = new RouteTask(this, mMap);
+            routeTask.execute(trackableId);
         }
         mMap.setMyLocationEnabled(true);
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -182,23 +193,7 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        marker.setDraggable(true);
         return false;
-    }
-
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-
     }
 
     public class TaskRequestDirections extends AsyncTask<String, Void, String> {
@@ -223,11 +218,29 @@ public class MapsActivity extends FragmentActivity implements
         }
     }
 
-    public class TaskParser extends AsyncTask<String, Void, List<List<HashMap<String, String>>>> {
+    //
+//    private class RouteTask extends ExceptionAsyncTask<Integer> {
+//
+//        @Override
+//        protected void doInBackground(Integer trackableId) {
+//
+//        }
+//
+//        @Override
+//        protected void dealWithException(Exception e) {
+//
+//        }
+//
+//        @Override
+//        protected void postExecute(AsyncTaskResult<Integer> result) {
+//
+//        }
+//    }
+    private class TaskParser extends AsyncTask<String, Void, List<List<HashMap<String, String>>>> {
 
         @Override
         protected List<List<HashMap<String, String>>> doInBackground(String... strings) {
-            JSONObject jsonObject = null;
+            JSONObject jsonObject;
             List<List<HashMap<String, String>>> routes = null;
             try {
                 jsonObject = new JSONObject(strings[0]);
@@ -243,12 +256,12 @@ public class MapsActivity extends FragmentActivity implements
         protected void onPostExecute(List<List<HashMap<String, String>>> lists) {
             //Get list route and display it into the map
 
-            ArrayList points = null;
+            ArrayList<LatLng> points = null;
 
             PolylineOptions polylineOptions = null;
 
             for (List<HashMap<String, String>> path : lists) {
-                points = new ArrayList();
+                points = new ArrayList<>();
                 polylineOptions = new PolylineOptions();
 
                 for (HashMap<String, String> point : path) {

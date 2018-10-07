@@ -65,7 +65,7 @@ public class TrackableDetailFragment extends Fragment {
             ((TextView) view.findViewById(R.id.cate_value)).setText(selectedTrackable.getCategory());
             ((TextView) view.findViewById(R.id.web_value)).setText(selectedTrackable.getUrl());
             ((TextView) view.findViewById(R.id.des_value)).setText(selectedTrackable.getDescription());
-            ((TextView) view.findViewById(R.id.route_info)).setText(trackableService.getRouteInfo(selectedTrackable));
+//            ((TextView) view.findViewById(R.id.route_info)).setText(trackableService.getRouteInfo(selectedTrackable));
         }
         return view;
     }

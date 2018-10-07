@@ -5,7 +5,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
 
-import java.text.DateFormat;
+import com.google.android.gms.maps.model.LatLng;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -198,7 +199,7 @@ public class TrackableService {
         return res;
     }
 
-//    @Deprecated
+    //    @Deprecated
     public List<TrackingService.TrackingInfo> getTrackingInfo(AbstractTrackable trackable) {
         List<TrackingService.TrackingInfo> infos = new ArrayList<>();
         parseTrackingData();
@@ -322,21 +323,15 @@ public class TrackableService {
 //        trackables.remove(trackable);
 //    }
 
-    public String getRouteInfo(AbstractTrackable trackable) {
+    public List<LatLng> getRouteInfo(int trackableId) {
+        List<LatLng> res = new ArrayList<>();
         parseTrackingData();
-        StringBuilder info = new StringBuilder();
-        for (TrackingService.TrackingInfo tracking : trackingInfos) {
-            if (tracking.trackableId == trackable.getId()) {
-                String r = String.format(Locale.getDefault(),
-                        "Location:%.5f,%.5f\tDate/Time:%s\tDuration:%s mins\n\n",
-                        tracking.latitude, tracking.longitude,
-                        DateFormat.getDateTimeInstance(
-                                DateFormat.SHORT, DateFormat.MEDIUM).format(tracking.date), tracking.stopTime);
-                info.append(r);
+        for (TrackingService.TrackingInfo info : trackingInfos) {
+            if (info.trackableId == trackableId) {
+                res.add(new LatLng(info.latitude, info.longitude));
             }
         }
-        String res = info.toString();
-        return res.isEmpty() ? "No route information now" : res;//TODO
+        return res;
     }
 
     private static class LazyHolder {
