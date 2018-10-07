@@ -334,6 +334,20 @@ public class TrackableService {
         return res;
     }
 
+    private String getDisRequestUrl(LatLng origin, LatLng dest) {
+        String originParam = String.format(Locale.getDefault(),
+                "origin=%f,%f&",
+                origin.latitude, origin.longitude);
+        String destParam = String.format(Locale.getDefault(),
+                "destination=%f,%f&",
+                dest.latitude, dest.longitude);
+        String output = "json?";
+        String mode = "mode=walking&";
+        String key = "key=" + context.getText(R.string.google_maps_key);
+        String param = originParam + destParam + mode + key;
+        return context.getText(R.string.distance_url) + output + param;
+    }
+
     private static class LazyHolder {
         static final TrackableService INSTANCE = new TrackableService();
     }

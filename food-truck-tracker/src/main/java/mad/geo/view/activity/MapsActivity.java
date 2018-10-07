@@ -34,10 +34,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import mad.geo.R;
 import mad.geo.service.task.RouteTask;
-import mad.geo.utils.DirectionsParser;
 
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -91,13 +91,6 @@ public class MapsActivity extends FragmentActivity implements
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         if (trackableId != -1) {
@@ -105,35 +98,32 @@ public class MapsActivity extends FragmentActivity implements
             routeTask.execute(trackableId);
         }
         mMap.setMyLocationEnabled(true);
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                //Reset marker when already 2
-                if (listPoints.size() == 2) {
-                    listPoints.clear();
-                    mMap.clear();
-                }
-                //Save first point select
-                listPoints.add(latLng);
-                //Create marker
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
+        mMap.setOnMapLongClickListener(latLng -> {
+            //Reset marker when already 2
+            if (listPoints.size() == 2) {
+                listPoints.clear();
+                mMap.clear();
+            }
+            //Save first point select
+            listPoints.add(latLng);
+            //Create marker
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
 
-                if (listPoints.size() == 1) {
-                    //Add first marker to the map
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                } else {
-                    //Add second marker to the map
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                }
-                mMap.addMarker(markerOptions);
+            if (listPoints.size() == 1) {
+                //Add first marker to the map
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            } else {
+                //Add second marker to the map
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            }
+            mMap.addMarker(markerOptions);
 
-                if (listPoints.size() == 2) {
-                    //Create the URL to get request from first marker to second marker
-                    String url = getRequestUrl(listPoints.get(0), listPoints.get(1));
-                    TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
-                    taskRequestDirections.execute(url);
-                }
+            if (listPoints.size() == 2) {
+                //Create the URL to get request from first marker to second marker
+                String url = getDistanceRequestUrl(listPoints.get(0), listPoints.get(1));
+                TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
+                taskRequestDirections.execute(url);
             }
         });
 
@@ -155,6 +145,20 @@ public class MapsActivity extends FragmentActivity implements
         //Create url to request
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + param;
         return url;
+    }
+
+    private String getDistanceRequestUrl(LatLng origin, LatLng dest) {
+        String originParam = String.format(Locale.getDefault(),
+                "origins=%f,%f&",
+                origin.latitude, origin.longitude);
+        String destParam = String.format(Locale.getDefault(),
+                "destinations=%f,%f&",
+                dest.latitude, dest.longitude);
+        String output = "json?";
+        String mode = "mode=walking&";
+        String key = "key=" + getText(R.string.google_maps_key);
+        String param = originParam + destParam + mode + key;
+        return getText(R.string.distance_url) + output + param;
     }
 
     private String requestDirection(String reqUrl) throws IOException {
@@ -187,7 +191,9 @@ public class MapsActivity extends FragmentActivity implements
             if (inputStream != null) {
                 inputStream.close();
             }
-            httpURLConnection.disconnect();
+            if (httpURLConnection != null) {
+                httpURLConnection.disconnect();
+            }
         }
         return responseString;
     }
@@ -257,8 +263,10 @@ public class MapsActivity extends FragmentActivity implements
             List<List<HashMap<String, String>>> routes = null;
             try {
                 jsonObject = new JSONObject(strings[0]);
-                DirectionsParser directionsParser = new DirectionsParser();
-                routes = directionsParser.parse(jsonObject);
+                System.out.println(jsonObject.toString());
+                return null;
+//                DirectionsParser directionsParser = new DirectionsParser();
+//                routes = directionsParser.parse(jsonObject);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

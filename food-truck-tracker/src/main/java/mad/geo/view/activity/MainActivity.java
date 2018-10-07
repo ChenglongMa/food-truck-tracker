@@ -121,20 +121,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void scheduleJob() {
-        // create a builder to make a JobInfo for the JobService so we can schedule it
-        // according to certain contraints (note use of ComponentName!)
         JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(this, SuggestionJob.class));
-
-        // delay start (only if it is not a periodic job!)
-        builder.setMinimumLatency(DELAY_MS);
-        // minimum periodic is currently 15 minutes so only if you are patient enough to test!
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+//        builder.setPeriodic(DELAY_MS);//Not working for Android N+
+        builder.setMinimumLatency(DELAY_MS);//TODO: read from preference
+        builder.setRequiresCharging(false);
         Log.d(LOG_TAG, String.format("Minimum periodic period (getMinPeriodMillis()): %d mins"
                 , TimeUnit.MILLISECONDS.toMinutes(JobInfo.getMinPeriodMillis())));
-        // comment out setMinimumLatency() call above to do periodic scheduling
-        //builder.setPeriodic(TimeUnit.MINUTES.toMillis(15));
-        // requires network .. see API for other options
-        //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-        // Schedule job
         Log.d(LOG_TAG, "Scheduling job");
         jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());

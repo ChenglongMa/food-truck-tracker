@@ -43,7 +43,8 @@
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_ok">OK</string>
 
-    <string name="default_time">05/07/2018 1:00:00 PM</string>
+    <string name="default_time">11/10/2018 1:00:00 PM</string>
+    <string name="distance_url">https://maps.googleapis.com/maps/api/distancematrix/</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="prompt_location">Please choose location</string>
@@ -51,4 +52,5 @@
     <string name="prompt_end_time">Please choose end time</string>
     <string name="tracking_card_meet_time">Meet Time:</string>
     <string name="title_activity_maps">TrackableMap</string>
+    <string name="notifications_title">Suggestion</string>
 </resources>
