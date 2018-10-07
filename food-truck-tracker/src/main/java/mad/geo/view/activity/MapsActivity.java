@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -100,7 +101,7 @@ public class MapsActivity extends FragmentActivity implements
             return;
         }
         if (trackableId != -1) {
-            RouteTask routeTask = new RouteTask(this, mMap);
+            RouteTask routeTask = new RouteTask(this);
             routeTask.execute(trackableId);
         }
         mMap.setMyLocationEnabled(true);
@@ -194,6 +195,18 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public boolean onMarkerClick(Marker marker) {
         return false;
+    }
+
+    public void onRequestRoutes(List<LatLng> routes) {
+        for (LatLng latLng : routes) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            mMap.addMarker(markerOptions);
+        }
+        if (!routes.isEmpty()) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(routes.get(0)));
+        }
     }
 
     public class TaskRequestDirections extends AsyncTask<String, Void, String> {
