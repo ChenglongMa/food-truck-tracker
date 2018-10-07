@@ -50,4 +50,5 @@
     <string name="prompt_start_time">Please choose start time</string>
     <string name="prompt_end_time">Please choose end time</string>
     <string name="tracking_card_meet_time">Meet Time:</string>
+    <string name="title_activity_maps">TrackableMap</string>
 </resources>

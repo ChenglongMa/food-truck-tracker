@@ -14,6 +14,7 @@ import java.util.List;
 import mad.geo.R;
 import mad.geo.model.AbstractTrackable;
 import mad.geo.service.TrackableService;
+import mad.geo.view.activity.MapsActivity;
 import mad.geo.view.activity.TrackableDetailActivity;
 import mad.geo.view.fragment.TrackableDetailFragment;
 
@@ -102,8 +103,9 @@ public class TrackableListAdapter
         public void onClick(View view) {
             selectedItem = (AbstractTrackable) view.getTag();
             Context context = view.getContext();
-            Intent intent = new Intent(context, TrackableDetailActivity.class);
+            Intent intent = new Intent(context, MapsActivity.class);
             intent.putExtra(TrackableDetailFragment.TRACKABLE_ID, selectedItem.getId());
+
             context.startActivity(intent);
         }
 
