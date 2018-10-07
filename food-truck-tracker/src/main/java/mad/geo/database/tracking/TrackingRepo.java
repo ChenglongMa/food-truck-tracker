@@ -71,7 +71,7 @@ public class TrackingRepo {
     /**
      * 记录是否存在
      */
-    public static boolean isExist(SQLiteOpenHelper helper, String trackingId) {
+    static boolean isExist(SQLiteOpenHelper helper, String trackingId) {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, AVAILABLE_PROJECTION,
                 TrackingColumns.TRACKING_ID + " =? ",
@@ -90,7 +90,7 @@ public class TrackingRepo {
     /**
      * 查询所有的学生
      */
-    public static List<AbstractTracking> queryAll(SQLiteOpenHelper helper) {
+    static List<AbstractTracking> queryAll(SQLiteOpenHelper helper) {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, AVAILABLE_PROJECTION, null, null, null, null, null, null);
         List<AbstractTracking> trackings = new ArrayList<>();
@@ -104,7 +104,7 @@ public class TrackingRepo {
     /**
      * 查询某个学生
      */
-    public static AbstractTracking query(SQLiteOpenHelper helper, String trackingId) {
+    static AbstractTracking query(SQLiteOpenHelper helper, String trackingId) {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, AVAILABLE_PROJECTION,
                 TrackingColumns.TRACKING_ID + " =? ", new String[]{trackingId}, null, null, null, null);
@@ -119,7 +119,7 @@ public class TrackingRepo {
     /**
      * 更新学生对象
      */
-    public static void update(SQLiteOpenHelper helper, AbstractTracking tracking) {
+    static void update(SQLiteOpenHelper helper, AbstractTracking tracking) {
         SQLiteDatabase db = helper.getWritableDatabase();
         db.update(TABLE_NAME, toContentValues(tracking),
                 TrackingColumns.TRACKING_ID + " =? ",
@@ -129,15 +129,19 @@ public class TrackingRepo {
     /**
      * 插入新数据
      */
-    public static void insert(SQLiteOpenHelper helper, AbstractTracking tracking) {
+    static void insert(SQLiteOpenHelper helper, AbstractTracking tracking) {
         SQLiteDatabase db = helper.getWritableDatabase();
+        db.insertOrThrow(TABLE_NAME, null, toContentValues(tracking));
+    }
+
+    static void insert(SQLiteDatabase db, AbstractTracking tracking) {
         db.insert(TABLE_NAME, null, toContentValues(tracking));
     }
 
     /**
      * 插入新数据，如果已经存在就替换
      */
-    public static void insertOrReplace(SQLiteOpenHelper helper, AbstractTracking tracking) {
+    static void insertOrReplace(SQLiteOpenHelper helper, AbstractTracking tracking) {
         SQLiteDatabase db = helper.getWritableDatabase();
         db.insertWithOnConflict(TABLE_NAME, null,
                 toContentValues(tracking),
@@ -147,7 +151,7 @@ public class TrackingRepo {
     /**
      * 删除某条记录
      */
-    public static void delete(SQLiteOpenHelper helper, String trackingId) {
+    static void delete(SQLiteOpenHelper helper, String trackingId) {
         SQLiteDatabase db = helper.getWritableDatabase();
         db.delete(TABLE_NAME, TrackingColumns.TRACKING_ID + " =? ",
                 new String[]{trackingId});
@@ -156,7 +160,7 @@ public class TrackingRepo {
     /**
      * 清空学生表
      */
-    public static void clear(SQLiteOpenHelper helper) {
+    static void clear(SQLiteOpenHelper helper) {
         SQLiteDatabase db = helper.getWritableDatabase();
         db.delete(TABLE_NAME, null, null);
     }

@@ -20,10 +20,11 @@ import mad.geo.database.trackable.TrackableManager;
 import mad.geo.model.AbstractTrackable;
 import mad.geo.model.AbstractTracking;
 import mad.geo.model.FoodTruck;
-import mad.geo.utils.DateHelper;
+import mad.geo.model.MealEvent;
 
 import static mad.geo.utils.DateHelper.advancedDate;
 import static mad.geo.utils.DateHelper.dateToString;
+import static mad.geo.utils.DateHelper.toDate;
 
 /**
  * The trackable service to access data
@@ -181,6 +182,23 @@ public class TrackableService {
         return times;
     }
 
+    @Deprecated
+    public List<AbstractTracking> getInitTrackings() {
+        List<AbstractTracking> res = new ArrayList<>();
+        parseTrackingData();
+        for (TrackingService.TrackingInfo info : trackingInfos) {
+            AbstractTracking tracking = new MealEvent();
+            tracking.setTarStartTime(info.date);
+            tracking.setTarEndTime(advancedDate(info.date, info.stopTime));
+            tracking.setMeetLocation(info.latitude, info.longitude);
+            tracking.setTitle("Default");
+            tracking.setTrackableId(info.trackableId);
+            res.add(tracking);
+        }
+        return res;
+    }
+
+//    @Deprecated
     public List<TrackingService.TrackingInfo> getTrackingInfo(AbstractTrackable trackable) {
         List<TrackingService.TrackingInfo> infos = new ArrayList<>();
         parseTrackingData();
@@ -242,15 +260,15 @@ public class TrackableService {
     }
 
 
-    @Deprecated
+    @Deprecated//TODO：AsyncTaskToRead
     private void parseTrackingData() {
         try {
-            String searchDate = "05/07/2018 1:00:00 PM";
+            String searchDate = "11/10/2018 1:00:00 PM";//TODO: change time
             int searchWindow = 24 * 60;
-            Date date = DateHelper.toDate(searchDate);
+            Date date = toDate(searchDate);
             trackingInfos = trackingService.getTrackingInfoForTimeRange(date, searchWindow, 0);
         } catch (ParseException e) {
-            Log.i(LOG_TAG, "ParseException Caught (Incorrect File Format)");
+            Log.e(LOG_TAG, "ParseException Caught (Incorrect File Format)");
         }
     }
 

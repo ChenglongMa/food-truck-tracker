@@ -116,9 +116,8 @@ public class TrackableManager {
         //context.getResources().openRawResource(R.raw.food_truck_data)
         try (Scanner scanner = new Scanner(context.getResources().openRawResource(R.raw.food_truck_data))) {
             Log.i(TAG, "Database Transaction?  " + db.inTransaction());
-            Log.i(TAG,
-                    "Database Locked by current thread?  "
-                            + db.isDbLockedByCurrentThread());
+            Log.i(TAG, "Database Locked by current thread?  "
+                    + db.isDbLockedByCurrentThread());
             // match comma and 0 or more whitespace OR trailing space and newline
             scanner.useDelimiter("\"?\\s*,\\s*\"|\"\\s*\\n+");
             while (scanner.hasNext()) {

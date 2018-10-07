@@ -18,7 +18,6 @@ import mad.geo.R;
 import mad.geo.view.activity.MainActivity;
 import mad.geo.controller.adapter.TrackingListAdapter;
 import mad.geo.model.AbstractTracking;
-import mad.geo.service.TrackableService;
 
 /**
  * A fragment representing a list of Items.
@@ -53,7 +52,7 @@ public class TrackingFragment extends Fragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             // hard code some trackings
             List<AbstractTracking> trackings = new ArrayList<>();//TODO
-            mAdapter = new TrackingListAdapter(trackings);
+            mAdapter = TrackingListAdapter.getInstance();
             recyclerView.setAdapter(mAdapter);
         }
         return view;

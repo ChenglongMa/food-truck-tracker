@@ -21,6 +21,8 @@ import java.util.Locale;
 import java.util.Scanner;
 
 import mad.geo.R;
+import mad.geo.database.tracking.TrackingManager;
+import mad.geo.model.AbstractTracking;
 import mad.geo.utils.DateHelper;
 
 public class TrackingService {
@@ -28,6 +30,7 @@ public class TrackingService {
     private static final String LOG_TAG = TrackingService.class.getName();
     private static Context context;
     private List<TrackingInfo> trackingList = new ArrayList<>();
+    private TrackingManager trackingManager = TrackingManager.getInstance(context);
 
     // Singleton
     private TrackingService() {
@@ -122,6 +125,22 @@ public class TrackingService {
             if (dateInRange(trackingInfo.date, date, periodMinutes, periodSeconds))
                 returnList.add(trackingInfo);
         return returnList;
+    }
+
+    public void updateTracking(AbstractTracking tracking) {
+        trackingManager.update(tracking);
+    }
+
+    public void addTracking(AbstractTracking tracking) {
+        trackingManager.insert(tracking);
+    }
+
+    public void removeTracking(AbstractTracking tracking) {
+        trackingManager.delete(tracking.getTrackingId());
+    }
+
+    public List<AbstractTracking> getTrackings() {
+        return trackingManager.queryAll();
     }
 
     public static class TrackingInfo {

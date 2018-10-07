@@ -7,9 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.text.DateFormat;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import mad.geo.R;
@@ -17,30 +15,57 @@ import mad.geo.model.AbstractTrackable;
 import mad.geo.model.AbstractTracking;
 import mad.geo.service.TrackableService;
 import mad.geo.service.TrackingService;
-import mad.geo.utils.DateHelper;
 
 import static mad.geo.utils.DateHelper.dateToString;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link AbstractTracking}
  */
-public class TrackingListAdapter extends RecyclerView.Adapter<TrackingListAdapter.ViewHolder> {
-    private static final String LOG_TAG = TrackingListAdapter.class.getName();
-    private List<AbstractTracking> mValues;
-    private AbstractTracking selectedTracking;
+public class TrackingListAdapter extends AbstractAdapter<AbstractTracking, TrackingListAdapter.ViewHolder> {
     private TrackableService trackableService;
     private TrackingService trackingService;
 
-    public TrackingListAdapter(List<AbstractTracking> items) {
-        items.sort(Comparator.comparing(AbstractTracking::getMeetTime));
-        mValues = items;
+    private TrackingListAdapter() {
+        super();
+    }
+
+    public static TrackingListAdapter getInstance() {
+        return LazyHolder.INSTANCE;
     }
 
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
         trackableService = TrackableService.getSingletonInstance(recyclerView.getContext());
         trackingService = TrackingService.getSingletonInstance(recyclerView.getContext());
+        super.onAttachedToRecyclerView(recyclerView);
+
+
+    }
+
+    @Override
+    public void setAll(List<AbstractTracking> data) {
+        data.sort(Comparator.comparing(AbstractTracking::getMeetTime));
+        super.setAll(data);
+    }
+
+    @Override
+    protected void updateInBackground(AbstractTracking tracking) {
+        trackingService.updateTracking(tracking);
+    }
+
+    @Override
+    protected void insertInBackground(AbstractTracking tracking) {
+        trackingService.addTracking(tracking);
+    }
+
+    @Override
+    protected void deleteInBackground(AbstractTracking tracking) {
+        trackingService.removeTracking(tracking);
+    }
+
+    @Override
+    protected List<AbstractTracking> refreshInBackground() {
+        return trackingService.getTrackings();
     }
 
     @NonNull
@@ -63,40 +88,43 @@ public class TrackingListAdapter extends RecyclerView.Adapter<TrackingListAdapte
         holder.itemView.setTag(tracking);
     }
 
-    @Override
-    public int getItemCount() {
-        return mValues.size();
+    private static class LazyHolder {
+        static final TrackingListAdapter INSTANCE = new TrackingListAdapter();
     }
+//    @Override
+//    public int getItemCount() {
+//        return mValues.size();
+//    }
+//
+//    public void addItem(AbstractTracking tracking) {
+//        trackableService.addTracking(tracking);
+//        notifyChanged();
+//        notifyItemInserted(mValues.indexOf(tracking));
+//    }
+//
+//    public void removeSelectedItem() {
+//        int index = mValues.indexOf(selectedTracking);
+//        trackableService.deleteTracking(selectedTracking);
+//        notifyChanged();
+//        notifyItemRemoved(index);
+//    }
+//
+//    public AbstractTracking getSelectedItem() {
+//        return selectedTracking;
+//    }
+//
+//    public void editItem(AbstractTracking tracking) {
+//        trackableService.updateTracking(tracking);
+//        notifyChanged();
+//        notifyItemChanged(mValues.indexOf(tracking));
+//    }
+//
+//    private void notifyChanged() {
+//        mValues = trackableService.getTrackings();
+//        notifyDataSetChanged();
+//    }
 
-    public void addItem(AbstractTracking tracking) {
-        trackableService.addTracking(tracking);
-        notifyChanged();
-        notifyItemInserted(mValues.indexOf(tracking));
-    }
-
-    public void removeSelectedItem() {
-        int index = mValues.indexOf(selectedTracking);
-        trackableService.deleteTracking(selectedTracking);
-        notifyChanged();
-        notifyItemRemoved(index);
-    }
-
-    public AbstractTracking getSelectedItem() {
-        return selectedTracking;
-    }
-
-    public void editItem(AbstractTracking tracking) {
-        trackableService.updateTracking(tracking);
-        notifyChanged();
-        notifyItemChanged(mValues.indexOf(tracking));
-    }
-
-    private void notifyChanged() {
-        mValues = trackableService.getTrackings();
-        notifyDataSetChanged();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder
+    class ViewHolder extends RecyclerView.ViewHolder
             implements View.OnLongClickListener {
 
         final View mView;
@@ -117,7 +145,7 @@ public class TrackingListAdapter extends RecyclerView.Adapter<TrackingListAdapte
 
         @Override
         public boolean onLongClick(View view) {
-            selectedTracking = (AbstractTracking) view.getTag();
+            selectedItem = (AbstractTracking) view.getTag();
             return false;
         }
     }

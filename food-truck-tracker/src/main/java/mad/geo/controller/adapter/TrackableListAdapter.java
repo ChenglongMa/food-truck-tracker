@@ -22,11 +22,7 @@ import mad.geo.view.fragment.TrackableDetailFragment;
  */
 public class TrackableListAdapter
         extends AbstractAdapter<AbstractTrackable, TrackableListAdapter.ViewHolder> {
-    private static final String LOG_TAG = TrackableListAdapter.class.getName();
-    //    private List<AbstractTrackable> mValues = new ArrayList<>();
-//    private AbstractTrackable selectedTrackable;
     private TrackableService trackableService;
-    private Context context;
 
     private TrackableListAdapter() {
         super();
@@ -36,35 +32,6 @@ public class TrackableListAdapter
         return LazyHolder.INSTANCE;
     }
 
-//    private void refresh() {
-//        cancelRefreshTaskIfRunning();
-//        refreshTask = new RefreshTask();
-//        refreshTask.execute();
-//    }
-//
-//    private void cancelInsertTaskIfRunning() {
-//        if (insertTask != null) {
-//            insertTask.cancel(true);
-//        }
-//    }
-//
-//    private void cancelRefreshTaskIfRunning() {
-//        if (refreshTask != null) {
-//            refreshTask.cancel(true);
-//        }
-//    }
-
-//    private void cancelUpdateTaskIfRunning() {
-//        if (updateTask != null) {
-//            updateTask.cancel(true);
-//        }
-//    }
-//
-//    private void cancelDeleteTaskIfRunning() {
-//        if (deleteTask != null) {
-//            deleteTask.cancel(true);
-//        }
-//    }
 
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {

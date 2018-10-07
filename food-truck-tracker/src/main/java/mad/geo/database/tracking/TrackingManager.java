@@ -1,16 +1,21 @@
 package mad.geo.database.tracking;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.List;
 
 import mad.geo.model.AbstractTracking;
+import mad.geo.service.TrackableService;
 import mad.geo.utils.DBOpenHelper;
 
 
 public class TrackingManager {
+    private static final String LOG_TAG = TrackingManager.class.getName();
     private static Context context;
     private final SQLiteOpenHelper dbHelper;
 
@@ -95,6 +100,38 @@ public class TrackingManager {
      */
     public void clear() {
         TrackingRepo.clear(dbHelper);
+    }
+
+    @Deprecated
+    public void initData(SQLiteDatabase db) {
+
+//        TrackingService.getSingletonInstance(context).getTrackingInfoForTimeRange()
+        Log.i(LOG_TAG, "Database Transaction Start");
+        db.beginTransaction();
+        try {
+            Log.i(LOG_TAG, "Database Transaction?  " + db.inTransaction());
+            Log.i(LOG_TAG, "Database Locked by current thread?  "
+                    + db.isDbLockedByCurrentThread());
+            List<AbstractTracking> trackings = TrackableService.getSingletonInstance(context).getInitTrackings();
+            for (AbstractTracking tracking : trackings) {
+                insert(db, tracking);
+            }
+            db.setTransactionSuccessful();
+        } catch (Resources.NotFoundException e) {
+            Log.e(LOG_TAG, "File Not Found Exception Caught");
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Transaction failed. Exception: " + e.getMessage());
+        } finally {
+            db.endTransaction();
+        }
+        Log.i(LOG_TAG, "Database Transaction End");
+    }
+
+    private void insert(SQLiteDatabase db, AbstractTracking tracking) {
+        if (tracking == null) {
+            return;
+        }
+        TrackingRepo.insert(db, tracking);
     }
 
     private static class LazyHolder {

@@ -2,6 +2,7 @@ package mad.geo.model;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import mad.geo.model.interfaces.Tracking;
 
@@ -20,6 +21,7 @@ public abstract class AbstractTracking extends AbstractUnique implements Trackin
     protected Date meetTime;
     protected String currLocation;
     protected String meetLocation;
+
 
     public AbstractTracking() {
         trackingId = getUniqueStringId();
@@ -104,6 +106,11 @@ public abstract class AbstractTracking extends AbstractUnique implements Trackin
         } else
             throw new IllegalArgumentException("Meet Time should be between Start Time and End Time");
 
+    }
+
+    public void setMeetLocation(double latitude, double longitude) {
+        //TODO:%.5f
+        this.meetLocation = String.format(Locale.getDefault(), "%f,%f", latitude, longitude);
     }
 
     public String getMeetTimeStr() {
