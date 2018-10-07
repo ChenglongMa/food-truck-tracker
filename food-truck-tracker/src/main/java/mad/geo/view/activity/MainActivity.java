@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String LOG_TAG = MainActivity.class.getName();
     private static final int JOB_ID = 1;
+    public static final String TRACKABLE_IDS = "item_ids";
     private static final int DELAY_MS = 1000; // 1 secs delay
     int mFilterMode = -1;
     private ViewPager viewPager;
@@ -80,8 +82,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        final BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        viewPager = findViewById(R.id.viewpager);
+        final BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -121,8 +123,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void scheduleJob() {
+        PersistableBundle bundle=new PersistableBundle();
+//        bundle.putIntArray(TRACKABLE_IDS,);
         JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(this, SuggestionJob.class));
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+
 //        builder.setPeriodic(DELAY_MS);//Not working for Android N+
         builder.setMinimumLatency(DELAY_MS);//TODO: read from preference
         builder.setRequiresCharging(false);

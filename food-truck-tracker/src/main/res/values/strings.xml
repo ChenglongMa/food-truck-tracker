@@ -53,4 +53,12 @@
     <string name="tracking_card_meet_time">Meet Time:</string>
     <string name="title_activity_maps">TrackableMap</string>
     <string name="notifications_title">Suggestion</string>
+
+    <string name="preference_title">Settings</string>
+    <string name="title_suggestion_interval">Suggestion Interval</string>
+    <string name="summary_suggestion_interval">Set interval to generate suggestion</string>
+    <string name="title_suggestion_switch">Suggestion Switch</string>
+    <string name="summary_suggestion_switch">Turn on/off the suggestion notification</string>
+    <string name="title_remind_me">Remind me</string>
+
 </resources>
