@@ -25,6 +25,17 @@ public class DateHelper {
     }
 
     /**
+     * Convert date string to {@link Date}
+     *
+     * @param dateStr the string of date
+     * @return the instance of {@link Date}
+     * @throws ParseException
+     */
+    public static Date toDate(CharSequence dateStr) throws ParseException {
+        return dateFormat.parse(dateStr.toString());
+    }
+
+    /**
      * Convert the instance of {@link Date} to String
      *
      * @param date the instance of {@link Date}
@@ -48,12 +59,14 @@ public class DateHelper {
     /**
      * Convert the {@link Date} to {@link Timestamp}
      * to save the accurate date time.
+     *
      * @param date
      * @return
      */
     public static Timestamp toSqlTime(@NonNull Date date) {
         return new Timestamp(date.getTime());
     }
+
     /**
      * Advance the date in specific mins
      *

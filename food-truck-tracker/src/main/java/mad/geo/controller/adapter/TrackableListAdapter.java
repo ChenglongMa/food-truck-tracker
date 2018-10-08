@@ -13,7 +13,6 @@ import java.util.List;
 
 import mad.geo.R;
 import mad.geo.model.AbstractTrackable;
-import mad.geo.service.TrackableService;
 import mad.geo.view.activity.MapsActivity;
 
 /**
@@ -21,7 +20,6 @@ import mad.geo.view.activity.MapsActivity;
  */
 public class TrackableListAdapter
         extends AbstractAdapter<AbstractTrackable, TrackableListAdapter.ViewHolder> {
-    private TrackableService trackableService;
 
     private TrackableListAdapter() {
         super();
@@ -31,13 +29,11 @@ public class TrackableListAdapter
         return LazyHolder.INSTANCE;
     }
 
-
     @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        trackableService = TrackableService.getSingletonInstance(recyclerView.getContext());
-        super.onAttachedToRecyclerView(recyclerView);
+    public void setAll(List<AbstractTrackable> data) {
+        super.setAll(data);
+        trackableService.setFilterTrackables(data);
     }
-
 
     @Override
     protected void updateInBackground(AbstractTrackable trackable) {

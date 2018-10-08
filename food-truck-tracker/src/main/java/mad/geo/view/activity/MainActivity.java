@@ -1,9 +1,8 @@
 package mad.geo.view.activity;
 
 import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.ComponentName;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -38,9 +37,9 @@ public class MainActivity extends AppCompatActivity
         implements AddEditTrackingDialog.OnFragmentInteractionListener,
         AddEditTrackableDialog.OnFragmentInteractionListener {
 
+    public static final String TRACKABLE_IDS = "item_ids";
     private static final String LOG_TAG = MainActivity.class.getName();
     private static final int JOB_ID = 1;
-    public static final String TRACKABLE_IDS = "item_ids";
     private static final int DELAY_MS = 1000; // 1 secs delay
     int mFilterMode = -1;
     private ViewPager viewPager;
@@ -48,7 +47,8 @@ public class MainActivity extends AppCompatActivity
     private MenuItem menuItem;
     private TrackableFragment trackableFragment;
     private TrackingFragment trackingFragment;
-    private JobScheduler jobScheduler;
+    private SettingsActivity.GeneralPreferenceFragment settingsFragment;
+//    private JobScheduler jobScheduler;
     /**
      * Navigate to specified page.
      */
@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity
         trackingFragment = TrackingFragment.newInstance();
         adapter.addFragment(trackableFragment);
         adapter.addFragment(trackingFragment);
+//        adapter.addFragment(settingsFragment);//TODO
         viewPager.setAdapter(adapter);
     }
 
@@ -113,18 +114,17 @@ public class MainActivity extends AppCompatActivity
             }
         });
         setupViewPager(viewPager);
-        scheduleJob();
     }
 
     @Override
     protected void onStop() {
-        jobScheduler.cancel(JOB_ID);
+//        jobScheduler.cancel(JOB_ID);
         super.onStop();
     }
 
-    private void scheduleJob() {
-        PersistableBundle bundle=new PersistableBundle();
-//        bundle.putIntArray(TRACKABLE_IDS,);
+    private void scheduleJob() throws InterruptedException {
+        PersistableBundle bundle = new PersistableBundle();
+
         JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(this, SuggestionJob.class));
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
 
@@ -134,8 +134,13 @@ public class MainActivity extends AppCompatActivity
         Log.d(LOG_TAG, String.format("Minimum periodic period (getMinPeriodMillis()): %d mins"
                 , TimeUnit.MILLISECONDS.toMinutes(JobInfo.getMinPeriodMillis())));
         Log.d(LOG_TAG, "Scheduling job");
-        jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(builder.build());
+//        jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        for (int i = 0; i < 4; i++) {
+            bundle.putInt(TRACKABLE_IDS, i);
+            builder.setExtras(bundle);
+//            jobScheduler.schedule(builder.build());
+            Thread.sleep(3000);
+        }
     }
 
     @Override
@@ -172,6 +177,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.action_add:
                 showTrackableDialog(R.string.add_trackable_dialog, null);
+                break;
+            case R.id.action_setting:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 break;
         }
 

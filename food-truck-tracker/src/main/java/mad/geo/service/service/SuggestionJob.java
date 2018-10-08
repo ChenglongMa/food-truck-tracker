@@ -2,28 +2,35 @@ package mad.geo.service.service;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.PersistableBundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import mad.geo.R;
+import mad.geo.view.activity.MainActivity;
 
 /**
  * @author : Chenglong Ma
  */
+@Deprecated
 public class SuggestionJob extends JobService {
     private static final int NOTIFICATION_ID = R.string.notifications_title;
     private final String LOG_TAG = this.getClass().getName();
     SharedPreferences sharedPreferences;
     private JobThread jobThread;
+    private int n = 0;
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        jobThread = new JobThread(params);
-        jobThread.start();
+        n = params.getExtras().getInt(MainActivity.TRACKABLE_IDS);
+        notification();
+//        jobThread = new JobThread(params);
+//        jobThread.start();
         return true;
     }
 
@@ -42,7 +49,7 @@ public class SuggestionJob extends JobService {
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setContentTitle(getText(R.string.title_activity_main))
-                        .setContentText("又有新的内容上线了，快来我们app看看吧!")
+                        .setContentText("又有新的内容上线了，快来我们app看看吧!" + n)
                         .setContentIntent(makeIntent());
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

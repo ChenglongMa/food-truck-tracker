@@ -40,9 +40,10 @@ public class TrackableService {
     private final TrackingService trackingService = TrackingService.getSingletonInstance(context);
     private final TrackableManager trackableManager = TrackableManager.getInstance(context);
     private final TrackingManager trackingManager = TrackingManager.getInstance(context);
-    private List<AbstractTrackable> trackables = new ArrayList<>();
+    private List<AbstractTrackable> filterTrackables = new ArrayList<>();
     private List<TrackingService.TrackingInfo> trackingInfos = new ArrayList<>();
     private List<AbstractTracking> trackings = new ArrayList<>();
+
 
     private TrackableService() {
 
@@ -220,10 +221,9 @@ public class TrackableService {
         return trackableManager.queryAll();
     }
 
-    @Deprecated//TODO：AsyncTaskToRead
     private void parseTrackingData() {
         try {
-            String searchDate = "11/10/2018 1:00:00 PM";//TODO: change time
+            CharSequence searchDate = context.getText(R.string.default_time);
             int searchWindow = 24 * 60;
             Date date = toDate(searchDate);
             trackingInfos = trackingService.getTrackingInfoForTimeRange(date, searchWindow, 0);
@@ -254,20 +254,6 @@ public class TrackableService {
         return res;
     }
 
-    private String getDisRequestUrl(LatLng origin, LatLng dest) {
-        String originParam = String.format(Locale.getDefault(),
-                "origin=%f,%f&",
-                origin.latitude, origin.longitude);
-        String destParam = String.format(Locale.getDefault(),
-                "destination=%f,%f&",
-                dest.latitude, dest.longitude);
-        String output = "json?";
-        String mode = "mode=walking&";
-        String key = "key=" + context.getText(R.string.google_maps_key);
-        String param = originParam + destParam + mode + key;
-        return context.getText(R.string.distance_url) + output + param;
-    }
-
     public void updateTracking(AbstractTracking tracking) {
         trackingManager.update(tracking);
     }
@@ -284,6 +270,14 @@ public class TrackableService {
         trackings = trackingManager.queryAll();
         trackings.sort(Comparator.comparing(AbstractTracking::getMeetTime));
         return trackings;
+    }
+
+    public List<AbstractTrackable> getFilterTrackables() {
+        return filterTrackables;
+    }
+
+    public void setFilterTrackables(List<AbstractTrackable> filterTrackables) {
+        this.filterTrackables = filterTrackables;
     }
 
     private static class LazyHolder {

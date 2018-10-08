@@ -53,7 +53,6 @@
 
         <activity
             android:name=".view.activity.MapsActivity"
-
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,12 +60,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.activity.SettingsActivity" />
 
         <service
             android:name=".service.service.SuggestionJob"
             android:enabled="true"
             android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE"></service>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".service.service.NotificationService" />
+        <service android:name=".service.service.SuggestionService" />
+
     </application>
 
 </manifest>

@@ -26,7 +26,9 @@
 
     <string name="action_bar_search">Search</string>
     <string name="action_bar_add">Add</string>
+    <string name="action_bar_suggest">Suggest Now</string>
     <string name="action_bar_edit">Edit</string>
+    <string name="action_bar_setting">Settings</string>
     <string name="action_bar_share">Share</string>
     <string name="action_bar_filter">Filter By</string>
     <string name="action_bar_filter_name">By Name</string>
@@ -60,5 +62,18 @@
     <string name="title_suggestion_switch">Suggestion Switch</string>
     <string name="summary_suggestion_switch">Turn on/off the suggestion notification</string>
     <string name="title_remind_me">Remind me</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="pref_title_suggestion_switch">Suggestion Switch</string>
+    <string name="pref_description_suggestion_switch">Choose to suggest or not
+    </string>
+
+    <string name="pref_header_suggestion">Suggestion</string>
+    <string name="pref_title_suggestion_item">Suggestion Interval (min)</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+    <integer name="pref_default_remind_time">1</integer>
 
 </resources>
