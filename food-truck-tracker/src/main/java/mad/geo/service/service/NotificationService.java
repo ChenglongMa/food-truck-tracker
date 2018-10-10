@@ -58,7 +58,9 @@ public class NotificationService extends IntentService {
                 Log.i(TAG, "Reminder time reads from preference: " + reminderMins);
                 for (AbstractTracking tracking : trackableService.getTrackings()) {
                     String id = tracking.getTrackingId();
-                    if (tracking.getMeetTime().getTime() <= System.currentTimeMillis() + 1000 * reminderMins) {
+                    long time = tracking.getMeetTime().getTime();
+                    if (time <= System.currentTimeMillis() + 1000 * 60 * reminderMins
+                            && time > System.currentTimeMillis()) {
                         double mins = reminderMins;
                         if (reminderMap.containsKey(id)) {
                             mins = reminderMap.getOrDefault(id, reminderMins);

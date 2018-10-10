@@ -76,7 +76,12 @@ public class SuggestionService extends IntentService {
                         JSONObject res = new JSONObject(mapHelper.requestDistance(url));
                         double dis = JsonHelper.getDistance(res);
                         if (Double.isNaN(dis)) {
-                            Log.e(TAG, "Please Check your google api key");
+                            String error = "Please Check your google api key\n";
+                            error += JsonHelper.getErrorMsg(res);
+                            Log.e(TAG, error);
+//                            sendException(new IllegalAccessException(error));
+                            isRunning = false;
+                            stopSelf();
                         }
                         if (dis < nearestDis) {
                             nearestDis = dis;

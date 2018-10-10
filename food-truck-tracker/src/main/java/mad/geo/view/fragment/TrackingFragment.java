@@ -1,14 +1,17 @@
 package mad.geo.view.fragment;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,8 +27,12 @@ import java.util.List;
 import mad.geo.R;
 import mad.geo.controller.adapter.TrackingListAdapter;
 import mad.geo.model.AbstractTracking;
+import mad.geo.service.service.DirectReplyReceiveService;
 import mad.geo.service.service.NotificationService;
 import mad.geo.view.activity.MainActivity;
+import mad.geo.view.dialog.AddEditTrackingDialog;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * A fragment representing a list of Items.
@@ -119,16 +126,59 @@ public class TrackingFragment extends Fragment {
                         .setContentText(msg);
 //                        .setContentIntent(makeIntent());
         NotificationManager mNotificationManager =
-                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
         assert mNotificationManager != null;
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
+    private void notification(String title, String text){
+        //toast的创建
+//        Intent showToastIntent = new Intent(getContext(), ShowToastService.class);
+//        showToastIntent.putExtra(getString(R.string.NOTIFICATION_ID_KEY), NOTIFICATION_ID);
+//        PendingIntent showToastPendingIntent = PendingIntent.getService(getActivity(), 2, showToastIntent, 0);
+
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(getActivity())
+                .setContentTitle(title)
+                .setContentText(text)
+                .setSmallIcon(R.drawable.ic_android_white_36dp)
+                //.setLargeIcon(BitmapFactory.decodeResource(R.drawable.xyz))
+                .setColor(getResources().getColor(R.color.colorAccent))
+                .setVibrate(new long[]{0, 300, 300, 300})
+                //.setSound()
+                .setLights(Color.WHITE, 1000, 5000)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                //to add new tracking dialog
+//                .addAction(R.drawable.ic_action_open ,"Add new Tracking", notificationPendingIntent)
+                //显示一个toast
+//                .addAction(R.drawable.ic_action_toast, "Toast", showToastPendingIntent)
+                //Reply消息
+                .addAction(generateDirectReplyAction());
+
+        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, notification.build());
+    }
+
+    private NotificationCompat.Action generateDirectReplyAction() {
+        Intent directReplyIntent = new Intent(getContext(), MainActivity.class);
+        directReplyIntent.putExtra(getString(R.string.NOTIFICATION_ID_KEY), NOTIFICATION_ID);
+        PendingIntent directReplyPendingIntent  = PendingIntent.getService(getActivity(), 5, directReplyIntent, 0);
+        RemoteInput remoteInput = new RemoteInput.Builder(getString(R.string.DIRECT_REPLY_RESULT_KEY))
+                .setLabel("Remind me again in...")
+                .build();
+
+        NotificationCompat.Action directReplyAction = new NotificationCompat.Action.Builder(R.drawable.ic_action_reply, "Remind", directReplyPendingIntent)
+                .addRemoteInput(remoteInput)
+                .build();
+        return directReplyAction;
     }
 
     class NotificationBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String msg = intent.getStringExtra(NOTIFICATION_MSG);
-            notification(msg);
+            notification("Upcoming Tracking",msg);
         }
 
     }

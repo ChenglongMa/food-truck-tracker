@@ -22,7 +22,6 @@ import static mad.geo.utils.DateHelper.dateToString;
  * {@link RecyclerView.Adapter} that can display a {@link AbstractTracking}
  */
 public class TrackingListAdapter extends AbstractAdapter<AbstractTracking, TrackingListAdapter.ViewHolder> {
-    private TrackableService trackableService;
 
     private TrackingListAdapter() {
         super();
@@ -30,14 +29,6 @@ public class TrackingListAdapter extends AbstractAdapter<AbstractTracking, Track
 
     public static TrackingListAdapter getInstance() {
         return LazyHolder.INSTANCE;
-    }
-
-    @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        trackableService = TrackableService.getSingletonInstance(recyclerView.getContext());
-        super.onAttachedToRecyclerView(recyclerView);
-
-
     }
 
     @Override

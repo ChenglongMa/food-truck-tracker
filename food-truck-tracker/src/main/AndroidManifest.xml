@@ -20,15 +20,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".view.activity.TrackableDetailActivity"
-            android:label="@string/title_trackable_detail"
-            android:parentActivityName=".view.activity.TrackableListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="mad.geo.view.activity.TrackableListActivity" />
-        </activity>
+        <!--<activity-->
+            <!--android:name=".view.activity.TrackableDetailActivity"-->
+            <!--android:label="@string/title_trackable_detail"-->
+            <!--android:parentActivityName=".view.activity.TrackableListActivity"-->
+            <!--android:theme="@style/AppTheme.NoActionBar">-->
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"-->
+                <!--android:value="mad.geo.view.activity.TrackableListActivity" />-->
+        <!--</activity>-->
         <activity
             android:name=".view.activity.MainActivity"
             android:label="@string/title_activity_main">
@@ -62,13 +62,10 @@
         </activity>
         <activity android:name=".view.activity.SettingsActivity" />
 
-        <service
-            android:name=".service.service.SuggestionJob"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".service.service.NotificationService" />
         <service android:name=".service.service.SuggestionService" />
+        <service android:name=".service.service.NotificationDisplayService" />
+        <service android:name=".service.service.DirectReplyReceiveService" />
 
     </application>
 

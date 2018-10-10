@@ -1,11 +1,9 @@
 package mad.geo.view.activity;
 
-import android.app.job.JobInfo;
-import android.content.ComponentName;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -13,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,12 +19,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import mad.geo.R;
 import mad.geo.model.AbstractTrackable;
 import mad.geo.model.AbstractTracking;
-import mad.geo.service.service.SuggestionJob;
 import mad.geo.view.dialog.AddEditTrackableDialog;
 import mad.geo.view.dialog.AddEditTrackingDialog;
 import mad.geo.view.fragment.TrackableFragment;
@@ -86,6 +81,10 @@ public class MainActivity extends AppCompatActivity
         viewPager = findViewById(R.id.viewpager);
         final BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        if(getIntent().hasExtra(getString(R.string.NOTIFICATION_ID_KEY))){
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.cancel(getIntent().getIntExtra(getString(R.string.NOTIFICATION_ID_KEY), 0));
+        }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -120,27 +119,6 @@ public class MainActivity extends AppCompatActivity
     protected void onStop() {
 //        jobScheduler.cancel(JOB_ID);
         super.onStop();
-    }
-
-    private void scheduleJob() throws InterruptedException {
-        PersistableBundle bundle = new PersistableBundle();
-
-        JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(this, SuggestionJob.class));
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-
-//        builder.setPeriodic(DELAY_MS);//Not working for Android N+
-        builder.setMinimumLatency(DELAY_MS);//TODO: read from preference
-        builder.setRequiresCharging(false);
-        Log.d(LOG_TAG, String.format("Minimum periodic period (getMinPeriodMillis()): %d mins"
-                , TimeUnit.MILLISECONDS.toMinutes(JobInfo.getMinPeriodMillis())));
-        Log.d(LOG_TAG, "Scheduling job");
-//        jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        for (int i = 0; i < 4; i++) {
-            bundle.putInt(TRACKABLE_IDS, i);
-            builder.setExtras(bundle);
-//            jobScheduler.schedule(builder.build());
-            Thread.sleep(3000);
-        }
     }
 
     @Override

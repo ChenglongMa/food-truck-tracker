@@ -19,6 +19,10 @@ public class JsonHelper {
         return false;
     }
 
+    public static String getErrorMsg(JSONObject json) throws JSONException {
+        return json.getString(ErrorKey.Error_MSG);
+    }
+
     private static JSONObject getResult(JSONObject json) throws JSONException {
         JSONArray res = json.getJSONArray(ResultKey.ROWS);
         if (res.length() > 0) {

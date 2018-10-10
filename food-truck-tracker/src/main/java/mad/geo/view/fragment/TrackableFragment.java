@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 import mad.geo.R;
+import mad.geo.service.service.NotificationDisplayService;
 import mad.geo.service.service.NotificationService;
 import mad.geo.service.service.SuggestionService;
 import mad.geo.view.activity.MainActivity;
@@ -167,7 +168,6 @@ public class TrackableFragment extends Fragment
                 mAdapter.setAll(trackables);
                 return true;
             case R.id.action_filter_name:
-                //TODO: to be implemented for assignment 2
                 return true;
         }
     }
@@ -177,9 +177,12 @@ public class TrackableFragment extends Fragment
             String msg = intent.getStringExtra(SUGGESTION_MSG);
             switch (Objects.requireNonNull(intent.getAction())) {
                 case SUGGESTION_REPLY:
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                    Intent startNotificationServiceIntent = new Intent(getContext(), NotificationDisplayService.class);
+                    getActivity().startService(startNotificationServiceIntent);
                     break;
                 case SUGGESTION_ERROR:
+                    Intent startNotificationServiceIntent2 = new Intent(getContext(), NotificationDisplayService.class);
+                    getActivity().startService(startNotificationServiceIntent2);
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
                     break;
             }
