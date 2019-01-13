@@ -30,10 +30,15 @@
         android:id="@+id/action_add"
         android:icon="@drawable/round_add_circle_white_24"
         android:title="@string/action_bar_add" />
-    <!--<item-->
-        <!--android:id="@+id/action_edit"-->
-        <!--android:icon="@android:drawable/ic_menu_edit"-->
-        <!--android:title="@string/action_bar_edit"-->
-        <!--app:showAsAction="always" />-->
+    <item
+        android:id="@+id/action_suggest"
+        android:title="@string/action_bar_suggest"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_setting"
+        android:icon="@drawable/baseline_settings_applications_24"
+        android:title="@string/action_bar_setting"
+        app:showAsAction="ifRoom" />
 
 </menu>

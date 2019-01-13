@@ -13,16 +13,13 @@ import java.util.List;
 
 import mad.geo.R;
 import mad.geo.model.AbstractTrackable;
-import mad.geo.service.TrackableService;
-import mad.geo.view.activity.TrackableDetailActivity;
-import mad.geo.view.fragment.TrackableDetailFragment;
+import mad.geo.view.activity.MapsActivity;
 
 /**
  * The data adapter for trackable list
  */
 public class TrackableListAdapter
         extends AbstractAdapter<AbstractTrackable, TrackableListAdapter.ViewHolder> {
-    private TrackableService trackableService;
 
     private TrackableListAdapter() {
         super();
@@ -32,13 +29,11 @@ public class TrackableListAdapter
         return LazyHolder.INSTANCE;
     }
 
-
     @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        trackableService = TrackableService.getSingletonInstance(recyclerView.getContext());
-        super.onAttachedToRecyclerView(recyclerView);
+    public void setAll(List<AbstractTrackable> data) {
+        super.setAll(data);
+        trackableService.setFilterTrackables(data);
     }
-
 
     @Override
     protected void updateInBackground(AbstractTrackable trackable) {
@@ -102,8 +97,8 @@ public class TrackableListAdapter
         public void onClick(View view) {
             selectedItem = (AbstractTrackable) view.getTag();
             Context context = view.getContext();
-            Intent intent = new Intent(context, TrackableDetailActivity.class);
-            intent.putExtra(TrackableDetailFragment.TRACKABLE_ID, selectedItem.getId());
+            Intent intent = new Intent(context, MapsActivity.class);
+            intent.putExtra(MapsActivity.TRACKABLE_ID, selectedItem.getId());
             context.startActivity(intent);
         }
 

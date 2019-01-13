@@ -1,5 +1,7 @@
 package mad.geo.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -27,10 +29,17 @@ public abstract class AbstractTracking extends AbstractUnique implements Trackin
         trackingId = getUniqueStringId();
     }
 
-//    private static String dateTimeToString(Date date) {
-//        return DateFormat.getDateTimeInstance(
-//                DateFormat.SHORT, DateFormat.MEDIUM).format(date);
-//    }
+    private static LatLng toLatLng(String locStr) {
+        String[] strs = locStr.split(",");
+        double[] doubles = new double[strs.length];
+        for (int i = 0; i < strs.length; i++) {
+            doubles[i] = Double.parseDouble(strs[i]);
+        }
+        if (doubles.length >= 2) {
+            return new LatLng(doubles[0], doubles[1]);
+        }
+        throw new IllegalArgumentException("Illegal Location value");
+    }
 
     public String getTrackingId() {
         return trackingId;
@@ -108,8 +117,11 @@ public abstract class AbstractTracking extends AbstractUnique implements Trackin
 
     }
 
+    public void setMeetLocation(LatLng latLng) {
+        setMeetLocation(latLng.latitude, latLng.longitude);
+    }
+
     public void setMeetLocation(double latitude, double longitude) {
-        //TODO:%.5f
         this.meetLocation = String.format(Locale.getDefault(), "%f,%f", latitude, longitude);
     }
 
@@ -125,12 +137,28 @@ public abstract class AbstractTracking extends AbstractUnique implements Trackin
         this.currLocation = currLocation;
     }
 
+    public void setCurrLocation(LatLng latLng) {
+        setCurrLocation(latLng.latitude, latLng.longitude);
+    }
+
+    public void setCurrLocation(double latitude, double longitude) {
+        this.meetLocation = String.format(Locale.getDefault(), "%f,%f", latitude, longitude);
+    }
+
     public String getMeetLocation() {
         return meetLocation;
     }
 
     public void setMeetLocation(String meetLocation) {
         this.meetLocation = meetLocation;
+    }
+
+    public LatLng getMeetLocationLatLng() {
+        return toLatLng(meetLocation);
+    }
+
+    public LatLng getCurrLocationLatLn() {
+        return toLatLng(currLocation);
     }
 
 }

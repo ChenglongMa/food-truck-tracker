@@ -1,10 +1,15 @@
 package mad.geo.view.fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -16,12 +21,18 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.Objects;
 
 import mad.geo.R;
+import mad.geo.service.service.NotificationDisplayService;
+import mad.geo.service.service.NotificationService;
+import mad.geo.service.service.SuggestionService;
 import mad.geo.view.activity.MainActivity;
 import mad.geo.controller.adapter.TrackableListAdapter;
 import mad.geo.model.AbstractTrackable;
 import mad.geo.service.TrackableService;
+
+import static mad.geo.view.fragment.TrackingFragment.ACTION_TYPE_THREAD;
 
 /**
  * A fragment representing a list of Items.
@@ -31,10 +42,16 @@ public class TrackableFragment extends Fragment
         implements SearchView.OnQueryTextListener {
 
     public static final String ARG_FILTER_MODE = "filter-mode";
+    public static final String SUGGESTION_REPLY = "fragment.reply";
+    public static final String SUGGESTION_MSG = "sgt_msg";
+    public static final String SUGGESTION_ERROR = "fragment.error";
+    public static final String SUGGESTION_TRACKABLE_ID = "sgt_id";
     private static final String LOG_TAG = TrackableFragment.class.getName();
     private TrackableService trackableService;
     private int mFilterMode;
     private TrackableListAdapter mAdapter;
+    private LocalBroadcastManager mLocalBroadcastManager;
+    private SuggestionBroadcastReceiver mBroadcastReceiver;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -67,7 +84,14 @@ public class TrackableFragment extends Fragment
             return;
         }
         trackableService = TrackableService.getSingletonInstance(activity);
-
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(activity);
+        mBroadcastReceiver = new SuggestionBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SUGGESTION_ERROR);
+        intentFilter.addAction(SUGGESTION_REPLY);
+        mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, intentFilter);
+        Intent startIntent = new Intent(activity, SuggestionService.class);
+        activity.startService(startIntent);
     }
 
     @Override
@@ -144,8 +168,25 @@ public class TrackableFragment extends Fragment
                 mAdapter.setAll(trackables);
                 return true;
             case R.id.action_filter_name:
-                //TODO: to be implemented for assignment 2
                 return true;
         }
+    }
+    class SuggestionBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String msg = intent.getStringExtra(SUGGESTION_MSG);
+            switch (Objects.requireNonNull(intent.getAction())) {
+                case SUGGESTION_REPLY:
+                    Intent startNotificationServiceIntent = new Intent(getContext(), NotificationDisplayService.class);
+                    getActivity().startService(startNotificationServiceIntent);
+                    break;
+                case SUGGESTION_ERROR:
+                    Intent startNotificationServiceIntent2 = new Intent(getContext(), NotificationDisplayService.class);
+                    getActivity().startService(startNotificationServiceIntent2);
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
     }
 }

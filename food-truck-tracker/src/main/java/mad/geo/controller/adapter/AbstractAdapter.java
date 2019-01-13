@@ -9,6 +9,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import mad.geo.model.AsyncTaskResult;
+import mad.geo.service.TrackableService;
 import mad.geo.utils.ExceptionAsyncTask;
 
 public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
@@ -21,13 +22,10 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
     private RefreshTask refreshTask;
     private DeleteTask deleteTask;
     private UpdateTask updateTask;
+    TrackableService trackableService;
 
     AbstractAdapter() {
         //TODO: lazyHolder
-//        this.context = context;
-//        this.mValues = mValues;
-//        layoutInflater = (LayoutInflater) context
-//                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     private void refresh() {
@@ -83,6 +81,7 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
         return selectedItem;
     }
 
+
     public void editItem(T t) {
         update(t);
         notifyItemChanged(mValues.indexOf(t));
@@ -105,6 +104,7 @@ public abstract class AbstractAdapter<T, VH extends RecyclerView.ViewHolder> ext
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.context = recyclerView.getContext();
+        trackableService = TrackableService.getSingletonInstance(context);
         refresh();
     }
 

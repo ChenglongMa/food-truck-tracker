@@ -26,7 +26,9 @@
 
     <string name="action_bar_search">Search</string>
     <string name="action_bar_add">Add</string>
+    <string name="action_bar_suggest">Suggest Now</string>
     <string name="action_bar_edit">Edit</string>
+    <string name="action_bar_setting">Settings</string>
     <string name="action_bar_share">Share</string>
     <string name="action_bar_filter">Filter By</string>
     <string name="action_bar_filter_name">By Name</string>
@@ -43,11 +45,37 @@
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_ok">OK</string>
 
-    <string name="default_time">05/07/2018 1:00:00 PM</string>
+    <string name="default_time">11/10/2018 1:00:00 PM</string>
+    <string name="distance_url">https://maps.googleapis.com/maps/api/distancematrix/</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="prompt_location">Please choose location</string>
     <string name="prompt_start_time">Please choose start time</string>
     <string name="prompt_end_time">Please choose end time</string>
     <string name="tracking_card_meet_time">Meet Time:</string>
+    <string name="title_activity_maps">TrackableMap</string>
+    <string name="notifications_title">Suggestion</string>
+
+    <string name="preference_title">Settings</string>
+    <string name="title_suggestion_interval">Suggestion Interval</string>
+    <string name="summary_suggestion_interval">Set interval to generate suggestion</string>
+    <string name="title_suggestion_switch">Suggestion Switch</string>
+    <string name="summary_suggestion_switch">Turn on/off the suggestion notification</string>
+    <string name="title_remind_me">Remind me</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="pref_title_suggestion_switch">Suggestion Switch</string>
+    <string name="pref_description_suggestion_switch">Choose to suggest or not
+    </string>
+
+    <string name="pref_header_suggestion">Suggestion</string>
+    <string name="pref_title_suggestion_item">Suggestion Interval (min)</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+    <integer name="pref_default_remind_time">1</integer>
+    <string name="NOTIFICATION_ID_KEY">NOTIFICATION_ID_KEY</string>
+    <string name="DIRECT_REPLY_RESULT_KEY">DIRECT_REPLY_RESULT_KEY</string>
+
 </resources>

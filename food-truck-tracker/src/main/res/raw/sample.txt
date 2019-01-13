@@ -1,0 +1,1 @@
+{"destination_addresses":["304 Swanston St, Melbourne VIC 3000, Australia"],"origin_addresses":["Building 14, Melbourne VIC 3000, Australia"],"rows":[{"elements":[{"distance":{"text":"0.4 km","value":374},"duration":{"text":"5 mins","value":281},"status":"OK"}]}],"status":"OK"}

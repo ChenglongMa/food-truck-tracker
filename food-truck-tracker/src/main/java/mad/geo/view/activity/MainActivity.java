@@ -1,5 +1,7 @@
 package mad.geo.view.activity;
 
+import android.app.NotificationManager;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,25 +21,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mad.geo.R;
+import mad.geo.model.AbstractTrackable;
+import mad.geo.model.AbstractTracking;
 import mad.geo.view.dialog.AddEditTrackableDialog;
 import mad.geo.view.dialog.AddEditTrackingDialog;
 import mad.geo.view.fragment.TrackableFragment;
 import mad.geo.view.fragment.TrackingFragment;
-import mad.geo.model.AbstractTrackable;
-import mad.geo.model.AbstractTracking;
 
 public class MainActivity extends AppCompatActivity
         implements AddEditTrackingDialog.OnFragmentInteractionListener,
         AddEditTrackableDialog.OnFragmentInteractionListener {
 
+    public static final String TRACKABLE_IDS = "item_ids";
     private static final String LOG_TAG = MainActivity.class.getName();
+    private static final int JOB_ID = 1;
+    private static final int DELAY_MS = 1000; // 1 secs delay
     int mFilterMode = -1;
     private ViewPager viewPager;
     private Menu menu;
     private MenuItem menuItem;
     private TrackableFragment trackableFragment;
     private TrackingFragment trackingFragment;
-
+    private SettingsActivity.GeneralPreferenceFragment settingsFragment;
+//    private JobScheduler jobScheduler;
     /**
      * Navigate to specified page.
      */
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity
         trackingFragment = TrackingFragment.newInstance();
         adapter.addFragment(trackableFragment);
         adapter.addFragment(trackingFragment);
+//        adapter.addFragment(settingsFragment);//TODO
         viewPager.setAdapter(adapter);
     }
 
@@ -71,9 +78,13 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        final BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        viewPager = findViewById(R.id.viewpager);
+        final BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        if(getIntent().hasExtra(getString(R.string.NOTIFICATION_ID_KEY))){
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.cancel(getIntent().getIntExtra(getString(R.string.NOTIFICATION_ID_KEY), 0));
+        }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -102,6 +113,12 @@ public class MainActivity extends AppCompatActivity
             }
         });
         setupViewPager(viewPager);
+    }
+
+    @Override
+    protected void onStop() {
+//        jobScheduler.cancel(JOB_ID);
+        super.onStop();
     }
 
     @Override
@@ -138,6 +155,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.action_add:
                 showTrackableDialog(R.string.add_trackable_dialog, null);
+                break;
+            case R.id.action_setting:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 break;
         }
 

@@ -1,11 +1,11 @@
 package mad.geo.service;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
 
-import java.text.DateFormat;
+import com.google.android.gms.maps.model.LatLng;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +17,7 @@ import java.util.Scanner;
 
 import mad.geo.R;
 import mad.geo.database.trackable.TrackableManager;
+import mad.geo.database.tracking.TrackingManager;
 import mad.geo.model.AbstractTrackable;
 import mad.geo.model.AbstractTracking;
 import mad.geo.model.FoodTruck;
@@ -38,9 +39,11 @@ public class TrackableService {
     private static Context context;
     private final TrackingService trackingService = TrackingService.getSingletonInstance(context);
     private final TrackableManager trackableManager = TrackableManager.getInstance(context);
-    private List<AbstractTrackable> trackables = new ArrayList<>();
+    private final TrackingManager trackingManager = TrackingManager.getInstance(context);
+    private List<AbstractTrackable> filterTrackables = new ArrayList<>();
     private List<TrackingService.TrackingInfo> trackingInfos = new ArrayList<>();
     private List<AbstractTracking> trackings = new ArrayList<>();
+
 
     private TrackableService() {
 
@@ -99,40 +102,6 @@ public class TrackableService {
         trackableManager.update(trackable);
         Log.i(LOG_TAG, "Update Trackable:  " + trackable.getName() + "(ID="
                 + trackable.getId() + ")");
-    }
-
-    @Deprecated
-    public void addTracking(AbstractTracking tracking) {
-        ContentValues values = new ContentValues();
-        values.put(TrackingColumns.TRACKING_ID, tracking.getTrackingId());
-        values.put(TrackingColumns.TRACKABLE_ID, tracking.getTrackableId());
-        values.put(TrackingColumns.TITLE, tracking.getTitle());
-        values.put(TrackingColumns.START_TIME, tracking.getStartTimeStr());
-        values.put(TrackingColumns.END_TIME, tracking.getEndTimeStr());
-//        db.insertOrThrow(DBOpenHelper.TABLE_TRACKABLE, null, values);
-        Log.i(LOG_TAG, "Added Tracking:  " + tracking.getTitle() + "(ID="
-                + tracking.getTrackingId() + ")");
-    }
-
-    @Deprecated
-    public void deleteTracking(AbstractTracking tracking) {
-////        db.delete(DBOpenHelper.TABLE_TRACKING, TrackingColumns.TRACKING_ID + "=",
-//        new String[]{String.valueOf(tracking.getTrackingId())});
-        Log.i(LOG_TAG, "Delete Tracking: " + tracking.getTitle() + "(ID="
-                + tracking.getTrackingId() + ")");
-    }
-
-    @Deprecated
-    public void updateTracking(AbstractTracking tracking) {
-        ContentValues values = new ContentValues();
-        values.put(TrackingColumns.TRACKABLE_ID, tracking.getTrackableId());
-        values.put(TrackingColumns.TITLE, tracking.getTitle());
-        values.put(TrackingColumns.START_TIME, tracking.getStartTimeStr());
-        values.put(TrackingColumns.END_TIME, tracking.getEndTimeStr());
-//        db.update(DBOpenHelper.TABLE_TRACKING, values, TrackingColumns.TRACKING_ID + "=",
-//        new String[]{String.valueOf(tracking.getTrackingId())});
-        Log.i(LOG_TAG, "Update Tracking:  " + tracking.getTitle() + "(ID="
-                + tracking.getTrackingId() + ")");
     }
 
     /**
@@ -198,7 +167,6 @@ public class TrackableService {
         return res;
     }
 
-//    @Deprecated
     public List<TrackingService.TrackingInfo> getTrackingInfo(AbstractTrackable trackable) {
         List<TrackingService.TrackingInfo> infos = new ArrayList<>();
         parseTrackingData();
@@ -253,17 +221,9 @@ public class TrackableService {
         return trackableManager.queryAll();
     }
 
-    @Deprecated
-    public List<AbstractTracking> getTrackings() {
-        trackings.sort(Comparator.comparing(AbstractTracking::getMeetTime));
-        return trackings;
-    }
-
-
-    @Deprecated//TODO：AsyncTaskToRead
     private void parseTrackingData() {
         try {
-            String searchDate = "11/10/2018 1:00:00 PM";//TODO: change time
+            CharSequence searchDate = context.getText(R.string.default_time);
             int searchWindow = 24 * 60;
             Date date = toDate(searchDate);
             trackingInfos = trackingService.getTrackingInfoForTimeRange(date, searchWindow, 0);
@@ -276,98 +236,51 @@ public class TrackableService {
         return trackableManager.query(String.valueOf(id));
     }
 
-    @Deprecated
-    public List<AbstractTrackable> getInitialTrackables() {
-        if (trackables == null || trackables.isEmpty()) {
-            trackables = parseFoodTruck();
-        }
-        return trackables;
-    }
-
     public List<AbstractTrackable> getTrackablesByCategory(final String... keys) {
         if (keys == null || keys.length <= 0 || Arrays.asList(keys).contains(FILTER_ALL)) {
             return trackableManager.queryAll();
         }
         return trackableManager.queryByCategory(keys);
-//        List<AbstractTrackable> res = new ArrayList<>();
-//        List<String> cons = Arrays.asList(keys);
-//        for (AbstractTrackable trackable : trackables) {
-//            if (cons.contains(trackable.getCategory())) {
-//                res.add(trackable);
-//            }
-//        }
-//        return res;
     }
 
-//    public void addTrackable(AbstractTrackable trackable) {
-//        for (AbstractTrackable t : trackables) {
-//            if (t.getId() == trackable.getId()) {
-//                throw new IllegalArgumentException("This object has existed");
-//            }
-//        }
-//        trackables.add(trackable);
-//    }
-
-//    public void updateTrackable(AbstractTrackable trackable) {
-//        for (int i = trackables.size() - 1; i >= 0; i--) {
-//            if (trackables.get(i).getId() == trackable.getId()) {
-//                trackables.remove(i);
-//                trackables.add(i, trackable);
-//                break;
-//            }
-//        }
-//    }
-//
-//    public void removeTrackable(AbstractTrackable trackable) {
-//        trackables.remove(trackable);
-//    }
-
-    public String getRouteInfo(AbstractTrackable trackable) {
+    public List<LatLng> getRouteInfo(int trackableId) {
+        List<LatLng> res = new ArrayList<>();
         parseTrackingData();
-        StringBuilder info = new StringBuilder();
-        for (TrackingService.TrackingInfo tracking : trackingInfos) {
-            if (tracking.trackableId == trackable.getId()) {
-                String r = String.format(Locale.getDefault(),
-                        "Location:%.5f,%.5f\tDate/Time:%s\tDuration:%s mins\n\n",
-                        tracking.latitude, tracking.longitude,
-                        DateFormat.getDateTimeInstance(
-                                DateFormat.SHORT, DateFormat.MEDIUM).format(tracking.date), tracking.stopTime);
-                info.append(r);
+        for (TrackingService.TrackingInfo info : trackingInfos) {
+            if (info.trackableId == trackableId) {
+                res.add(new LatLng(info.latitude, info.longitude));
             }
         }
-        String res = info.toString();
-        return res.isEmpty() ? "No route information now" : res;//TODO
+        return res;
+    }
+
+    public void updateTracking(AbstractTracking tracking) {
+        trackingManager.update(tracking);
+    }
+
+    public void addTracking(AbstractTracking tracking) {
+        trackingManager.insert(tracking);
+    }
+
+    public void removeTracking(AbstractTracking tracking) {
+        trackingManager.delete(tracking.getTrackingId());
+    }
+
+    public List<AbstractTracking> getTrackings() {
+        trackings = trackingManager.queryAll();
+        trackings.sort(Comparator.comparing(AbstractTracking::getMeetTime));
+        return trackings;
+    }
+
+    public List<AbstractTrackable> getFilterTrackables() {
+        return filterTrackables;
+    }
+
+    public void setFilterTrackables(List<AbstractTrackable> filterTrackables) {
+        this.filterTrackables = filterTrackables;
     }
 
     private static class LazyHolder {
         static final TrackableService INSTANCE = new TrackableService();
-    }
-
-//    public static class DummyData {
-//        public static List<AbstractTracking> getDummyTrackings() {
-//            for (int i = 1; i < 4; i++) {
-//                AbstractTracking tracking = new MealEvent();
-//                tracking.setTitle("Lunch at Fat Ribs " + i);
-//                tracking.setTarStartTime(new Date(System.currentTimeMillis() - 10000000 * i));
-//                tracking.setTarEndTime(new Date(System.currentTimeMillis() + 10000000 * i));
-//                tracking.setMeetTime(new Date(System.currentTimeMillis() + 5000000 * i));
-//                tracking.setTrackableId(i);
-//                tracking.setCurrLocation("-37.810045, 144.964220");
-//                tracking.setMeetLocation("-37.810045, 144.964220");
-//                TrackableService.getInstance(context).trackings.add(tracking);
-//            }
-//            return TrackableService.getInstance(context).trackings;
-//        }
-//    }
-
-    private class TrackingColumns {
-        static final String TRACKING_ID = "_id";
-        static final String TRACKABLE_ID = "tid";
-        static final String TITLE = "title";
-        static final String START_TIME = "start_time";
-        static final String END_TIME = "end_time";
-        static final String MEET_TIME = "meet_time";
-        static final String CURR_LOCATION = "corr_location";
-        static final String MEET_LOCATION = "meet_location";
     }
 }
