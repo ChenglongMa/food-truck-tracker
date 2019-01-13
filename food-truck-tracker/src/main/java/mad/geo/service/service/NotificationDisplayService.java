@@ -65,11 +65,11 @@ public class NotificationDisplayService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
                 //to add new tracking dialog
-                .addAction(R.drawable.ic_action_open, "Add new Tracking", notificationPendingIntent)
+                .addAction(R.drawable.ic_action_open, "Add new Tracking", notificationPendingIntent);
                 //显示一个toast
 //                .addAction(R.drawable.ic_action_toast, "Toast", showToastPendingIntent)
                 //Reply消息
-                .addAction(generateDirectReplyAction());
+//                .addAction(generateDirectReplyAction());
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID, notification.build());
